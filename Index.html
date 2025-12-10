@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Estudo - Bancos de Dados NoSQL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-external {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .nav-external:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tips-section {
+            background: #f5f7ff;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .tips-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .tip-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #4caf50;
+        }
+
+        .tip-item strong {
+            color: #333;
+        }
+
+        .tip-item p {
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .bank-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .bank-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .bank-name {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bank-icon {
+            font-size: 1.5em;
+        }
+
+        .bank-section {
+            margin-bottom: 20px;
+        }
+
+        .bank-section h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .bank-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .bank-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bank-list li {
+            color: #666;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .bank-list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .cap-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+
+        .cap-ap {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .cap-cp {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .cap-ca {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .architecture-box {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 3px solid #667eea;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f7ff;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .study-checklist {
+            background: #f5f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .study-checklist h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            color: #666;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .go-to-quiz {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .go-to-quiz h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .go-to-quiz a {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .go-to-quiz a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+
+            .comparison-table {
+                font-size: 0.9em;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Guia Completo de Estudo - Bancos de Dados NoSQL</h1>
+            <p>Prepare-se para a prova com este guia abrangente</p>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('dicas')">💡 Dicas de Estudo</button>
+            <button class="nav-btn" onclick="showSection('bancos')">🏛️ Arquitetura dos Bancos</button>
+            <button class="nav-btn" onclick="showSection('cap')">⚖️ Teorema CAP</button>
+            <button class="nav-btn" onclick="showSection('comparacao')">📊 Comparação</button>
+            <button class="nav-btn" onclick="showSection('simulado')">🎯 Ir para Simulado</button>
+            <button class="nav-btn nav-external" onclick="window.open('simulado.html', '_blank')">📝 Abrir Simulado em Nova Aba</button>
+        </div>
+
+        <!-- SEÇÃO DE DICAS -->
+        <div id="dicas" class="content-section active">
+            <div class="tips-section">
+                <h2>💡 Dicas Essenciais de Estudo</h2>
+
+                <div class="tip-item">
+                    <strong>1. Comece pelo Teorema CAP</strong>
+                    <p>Entenda que todo banco NoSQL escolhe 2 de 3 propriedades: Consistência (C), Disponibilidade (A) ou Tolerância a Partições (P). Isso é fundamental para entender as diferenças entre os bancos.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>2. Memorize as Posições CAP</strong>
+                    <p>Cada banco tem uma posição clara: Cassandra e Redis são AP, Neo4j e HBase são CP, MongoDB é configurável. Isso aparecerá em muitas questões!</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>3. Entenda os Modelos de Dados</strong>
+                    <p>Cada banco tem um modelo diferente: Documentos (MongoDB), Grafos (Neo4j), Colunas (Cassandra, HBase), Chave-Valor (Redis, DynamoDB). Saiba quando usar cada um.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>4. Foque nos Casos de Uso</strong>
+                    <p>Não é só sobre características técnicas. Saiba quando usar cada banco: Cassandra para Big Data, Redis para cache, Neo4j para redes sociais, MongoDB para aplicações gerais.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>5. Estude a Arquitetura Interna</strong>
+                    <p>Entenda como os dados são armazenados: RocksDB no ArangoDB, MemStore/WAL/HFile no HBase, BSON no MongoDB. Isso diferencia um banco do outro.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>6. Aprenda as Linguagens de Consulta</strong>
+                    <p>Cada banco tem sua linguagem: AQL (ArangoDB), CQL (Cassandra), MQL (MongoDB), Cypher (Neo4j). Conhecer a sintaxe básica é importante.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>7. Entenda Replicação e Escalabilidade</strong>
+                    <p>Como cada banco replica dados? Masterless (Cassandra), Master-Slave (MongoDB), Mestre-Mestre (CouchDB). Como escalam? Sharding, particionamento, distribuição.</p>
+                </div>
+
+                <div class="tip-item">
+                    <strong>8. Pratique com o Simulado</strong>
+                    <p>Faça o simulado várias vezes. Revise as explicações das questões que errar. O simulado cobre 50 questões baseadas nos materiais reais.</p>
+                </div>
+            </div>
+
+            <div class="study-checklist">
+                <h4>✅ Checklist de Estudo</h4>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check1">
+                    <label for="check1">Entendi o Teorema CAP e as posições de cada banco</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check2">
+                    <label for="check2">Conheço os 8 bancos principais: ArangoDB, Cassandra, MongoDB, Neo4j, Redis, DynamoDB, HBase, CouchDB</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check3">
+                    <label for="check3">Sei o modelo de dados de cada banco (documento, grafo, coluna, chave-valor)</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check4">
+                    <label for="check4">Conheço os casos de uso ideais para cada banco</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check5">
+                    <label for="check5">Entendi a arquitetura interna de cada banco</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check6">
+                    <label for="check6">Conheço as linguagens de consulta de cada banco</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check7">
+                    <label for="check7">Entendi como funciona replicação e escalabilidade</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check8">
+                    <label for="check8">Fiz o simulado completo com 50 questões</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO DE ARQUITETURA -->
+        <div id="bancos" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2em;">🏛️ Arquitetura e Características de Cada Banco</h2>
+
+            <!-- ARANGODB -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">🔗</span>
+                    ArangoDB
+                </div>
+                <span class="cap-badge cap-cp">CP (Consistência + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Multimodelo:</strong> Documentos + Grafos + Chave-Valor em um único banco</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Motor de Armazenamento:</strong> RocksDB (baseado em LSM-Tree)<br>
+                        <strong>Formato de Dados:</strong> VelocyPack (binário otimizado)<br>
+                        <strong>Replicação:</strong> Síncrona (Líder-Seguidor)<br>
+                        <strong>Linguagem:</strong> AQL (ArangoDB Query Language)
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Multimodelo: como integra grafos, documentos e chave-valor</li>
+                        <li>VelocyPack: formato binário para otimização</li>
+                        <li>RocksDB: motor de armazenamento com LSM-Tree</li>
+                        <li>AQL: sintaxe básica de consultas</li>
+                        <li>Replicação síncrona e modelo CP</li>
+                        <li>Casos de uso: dados conectados, consultas híbridas</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Unifica múltiplos modelos em um banco</li>
+                        <li>Consultas complexas com JOINs e travessias de grafos</li>
+                        <li>Consistência forte garantida</li>
+                        <li>Escalabilidade horizontal</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CASSANDRA -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">📊</span>
+                    Apache Cassandra
+                </div>
+                <span class="cap-badge cap-ap">AP (Disponibilidade + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Colunar Amplo (Wide-Column):</strong> Tabelas com famílias de colunas</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Arquitetura:</strong> Masterless (Peer-to-Peer)<br>
+                        <strong>Distribuição:</strong> Anel (Ring) com hash consistente<br>
+                        <strong>Replicação:</strong> Assíncrona (Consistência Eventual)<br>
+                        <strong>Linguagem:</strong> CQL (Cassandra Query Language)<br>
+                        <strong>Modelagem:</strong> Orientada à Consulta
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Partition Key: define o nó de armazenamento</li>
+                        <li>Clustering Key: ordena dados dentro da partição</li>
+                        <li>Modelagem orientada à consulta</li>
+                        <li>Consistência eventual e ajustável</li>
+                        <li>Arquitetura masterless sem ponto único de falha</li>
+                        <li>Escalabilidade linear com adição de nós</li>
+                        <li>Casos de uso: Big Data, IoT, logs, séries temporais</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Performance excepcional em escritas</li>
+                        <li>Escalabilidade horizontal linear</li>
+                        <li>Alta disponibilidade e tolerância a falhas</li>
+                        <li>Suporte a múltiplos data centers</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MONGODB -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">🍃</span>
+                    MongoDB
+                </div>
+                <span class="cap-badge cap-cp">CP (Configurável - Recente)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Documentos JSON:</strong> Armazena dados em formato BSON</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Formato:</strong> BSON (Binary JSON)<br>
+                        <strong>Replicação:</strong> Replica Sets (Primário + Secundários)<br>
+                        <strong>Escalabilidade:</strong> Sharding automático<br>
+                        <strong>Linguagem:</strong> MQL (MongoDB Query Language)<br>
+                        <strong>Transações:</strong> ACID multi-documento (4.0+)
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>BSON: formato binário de armazenamento</li>
+                        <li>Coleções: agrupamento de documentos sem esquema rígido</li>
+                        <li>Replica Sets: como funciona a eleição de primário</li>
+                        <li>Sharding: distribuição de dados entre múltiplos servidores</li>
+                        <li>Índices: B-tree para otimização de consultas</li>
+                        <li>Aggregation Framework: pipeline de processamento</li>
+                        <li>Casos de uso: aplicações web, mobile, conteúdo gerado por usuário</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Flexibilidade de esquema</li>
+                        <li>Fácil de usar e aprender</li>
+                        <li>Escalabilidade horizontal via sharding</li>
+                        <li>Transações ACID em versões recentes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- NEO4J -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">🕸️</span>
+                    Neo4j
+                </div>
+                <span class="cap-badge cap-cp">CP (Consistência + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Grafos:</strong> Nós, Relacionamentos e Propriedades</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Estrutura:</strong> Nós (Nodes) + Relacionamentos (Relationships)<br>
+                        <strong>Característica:</strong> Index-Free Adjacency<br>
+                        <strong>Replicação:</strong> Causal Cluster (Core Servers + Read Replicas)<br>
+                        <strong>Linguagem:</strong> Cypher (declarativa e visual)<br>
+                        <strong>Transações:</strong> ACID completo
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Index-Free Adjacency: ponteiros diretos entre nós</li>
+                        <li>Cypher: sintaxe visual para consultas de grafos</li>
+                        <li>Nós e Relacionamentos: estrutura fundamental</li>
+                        <li>Rótulos (Labels): agrupamento de nós</li>
+                        <li>Travessias de grafos: performance em dados conectados</li>
+                        <li>Casos de uso: redes sociais, recomendações, detecção de fraude</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Travessias de grafos 100x mais rápidas que JOINs</li>
+                        <li>Representação natural de dados conectados</li>
+                        <li>ACID completo em servidor único</li>
+                        <li>Linguagem Cypher intuitiva</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- REDIS -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">⚡</span>
+                    Redis
+                </div>
+                <span class="cap-badge cap-ap">AP (Disponibilidade + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Chave-Valor em Memória:</strong> Estruturas de dados avançadas</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Armazenamento:</strong> RAM (In-Memory)<br>
+                        <strong>Processamento:</strong> Single-Threaded (atomicidade garantida)<br>
+                        <strong>Persistência:</strong> RDB (snapshots) e AOF (append-only file)<br>
+                        <strong>Replicação:</strong> Master-Slave (assíncrona)<br>
+                        <strong>Escalabilidade:</strong> Redis Cluster (sharding)
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>In-Memory: latência de microssegundos</li>
+                        <li>Estruturas de dados: Strings, Lists, Hashes, Sets, Sorted Sets</li>
+                        <li>Single-Threaded: atomicidade sem locks</li>
+                        <li>RDB vs AOF: mecanismos de persistência</li>
+                        <li>Redis Sentinel: alta disponibilidade</li>
+                        <li>Redis Cluster: particionamento automático</li>
+                        <li>Casos de uso: cache, sessões, filas, contadores, pub/sub</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Performance incomparável (microssegundos)</li>
+                        <li>Estruturas de dados versáteis</li>
+                        <li>Atomicidade garantida por design</li>
+                        <li>Suporte a persistência opcional</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- DYNAMODB -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">☁️</span>
+                    Amazon DynamoDB
+                </div>
+                <span class="cap-badge cap-ap">AP (Disponibilidade + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Chave-Valor + Documentos:</strong> Serverless gerenciado pela AWS</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Modelo:</strong> Serverless (totalmente gerenciado)<br>
+                        <strong>Particionamento:</strong> Automático via Partition Key<br>
+                        <strong>Replicação:</strong> Multi-zona (3 data centers)<br>
+                        <strong>Índices:</strong> GSI (Global Secondary Index), LSI (Local Secondary Index)<br>
+                        <strong>Escalabilidade:</strong> Auto-scaling automático
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Serverless: AWS gerencia tudo (infraestrutura, replicação, backups)</li>
+                        <li>Partition Key: define em qual partição o item fica</li>
+                        <li>Sort Key: ordena itens dentro da partição</li>
+                        <li>GSI: índice global para consultas alternativas</li>
+                        <li>LSI: índice local com mesma partition key</li>
+                        <li>Global Tables: replicação multi-região</li>
+                        <li>Casos de uso: e-commerce, jogos, IoT, aplicações serverless</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Totalmente gerenciado (sem overhead operacional)</li>
+                        <li>Escalabilidade automática</li>
+                        <li>Baixa latência consistente</li>
+                        <li>Modelo de pagamento por uso</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- HBASE -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">🏗️</span>
+                    Apache HBase
+                </div>
+                <span class="cap-badge cap-cp">CP (Consistência + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Colunar Amplo (Wide-Column):</strong> Otimizado para Big Data</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Armazenamento:</strong> HDFS (Hadoop Distributed File System)<br>
+                        <strong>Coordenação:</strong> ZooKeeper<br>
+                        <strong>Estrutura:</strong> MemStore → WAL → HFile<br>
+                        <strong>Distribuição:</strong> Regions (faixas de Row Key)<br>
+                        <strong>Replicação:</strong> HDFS (3 cópias por padrão)
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Row Key: crítico para performance e distribuição</li>
+                        <li>Column Family: agrupamento lógico de colunas</li>
+                        <li>MemStore: escrita em memória (rápida)</li>
+                        <li>WAL: Write-Ahead Log para durabilidade</li>
+                        <li>HFile: armazenamento em disco (HDFS)</li>
+                        <li>Regions: divisão automática de dados</li>
+                        <li>Casos de uso: séries temporais, logs, analytics em tempo real</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Escalabilidade massiva (petabytes)</li>
+                        <li>Consistência forte garantida</li>
+                        <li>Acesso aleatório rápido com Row Key bem planejada</li>
+                        <li>Integração nativa com Hadoop</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- COUCHDB -->
+            <div class="bank-card">
+                <div class="bank-name">
+                    <span class="bank-icon">📄</span>
+                    Apache CouchDB
+                </div>
+                <span class="cap-badge cap-ap">AP (Disponibilidade + Partição)</span>
+                
+                <div class="bank-section">
+                    <h4>Modelo de Dados</h4>
+                    <p><strong>Documentos JSON:</strong> Orientado para aplicações web e offline-first</p>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Arquitetura</h4>
+                    <div class="architecture-box">
+                        <strong>Formato:</strong> Documentos JSON nativos<br>
+                        <strong>Interface:</strong> HTTP/REST<br>
+                        <strong>Replicação:</strong> Mestre-Mestre (multi-master)<br>
+                        <strong>Consultas:</strong> MapReduce (JavaScript)<br>
+                        <strong>Versionamento:</strong> Histórico de revisões
+                    </div>
+                </div>
+
+                <div class="bank-section">
+                    <h4>O que Estudar</h4>
+                    <ul class="bank-list">
+                        <li>Documentos JSON: flexibilidade total de esquema</li>
+                        <li>Replicação mestre-mestre: sincronização bidirecional</li>
+                        <li>MapReduce: funções JavaScript para consultas</li>
+                        <li>Design Documents: views e índices</li>
+                        <li>Versionamento: histórico de revisões (_rev)</li>
+                        <li>Casos de uso: aplicações offline-first, mobile, IoT</li>
+                    </ul>
+                </div>
+
+                <div class="bank-section">
+                    <h4>Vantagens</h4>
+                    <ul class="bank-list">
+                        <li>Replicação mestre-mestre confiável</li>
+                        <li>Sincronização offline/online</li>
+                        <li>Flexibilidade total de dados</li>
+                        <li>Interface HTTP/REST simples</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO CAP -->
+        <div id="cap" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2em;">⚖️ Teorema CAP - Posição de Cada Banco</h2>
+
+            <div class="tips-section">
+                <h2>O que é o Teorema CAP?</h2>
+                <p>O Teorema CAP afirma que um sistema distribuído não pode garantir simultaneamente três propriedades:</p>
+                <ul class="bank-list" style="margin-top: 15px;">
+                    <li><strong>C (Consistência):</strong> Todos os nós veem os mesmos dados ao mesmo tempo</li>
+                    <li><strong>A (Disponibilidade):</strong> O sistema sempre responde a requisições</li>
+                    <li><strong>P (Tolerância a Partições):</strong> O sistema funciona mesmo com falhas de rede</li>
+                </ul>
+                <p style="margin-top: 15px; color: #d32f2f;"><strong>Importante:</strong> Como falhas de rede são inevitáveis, a escolha real é entre Consistência (C) e Disponibilidade (A).</p>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Banco de Dados</th>
+                        <th>Posição CAP</th>
+                        <th>Prioridade</th>
+                        <th>Replicação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ArangoDB</strong></td>
+                        <td><span class="cap-badge cap-cp">CP</span></td>
+                        <td>Consistência + Tolerância</td>
+                        <td>Síncrona</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Apache Cassandra</strong></td>
+                        <td><span class="cap-badge cap-ap">AP</span></td>
+                        <td>Disponibilidade + Tolerância</td>
+                        <td>Assíncrona (Eventual)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MongoDB</strong></td>
+                        <td><span class="cap-badge cap-cp">CP</span></td>
+                        <td>Consistência + Tolerância (Configurável)</td>
+                        <td>Síncrona (Replica Set)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neo4j</strong></td>
+                        <td><span class="cap-badge cap-cp">CP</span></td>
+                        <td>Consistência + Tolerância</td>
+                        <td>Síncrona (ACID)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Redis</strong></td>
+                        <td><span class="cap-badge cap-ap">AP</span></td>
+                        <td>Disponibilidade + Tolerância</td>
+                        <td>Assíncrona (Eventual)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DynamoDB</strong></td>
+                        <td><span class="cap-badge cap-ap">AP</span></td>
+                        <td>Disponibilidade + Tolerância</td>
+                        <td>Assíncrona (Eventual)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HBase</strong></td>
+                        <td><span class="cap-badge cap-cp">CP</span></td>
+                        <td>Consistência + Tolerância</td>
+                        <td>Síncrona (HDFS)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CouchDB</strong></td>
+                        <td><span class="cap-badge cap-ap">AP</span></td>
+                        <td>Disponibilidade + Tolerância</td>
+                        <td>Assíncrona (Eventual)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="bank-card">
+                <h3 style="color: #667eea; margin-bottom: 20px;">Bancos CP (Consistência + Partição)</h3>
+                <p>Estes bancos <strong>priorizam consistência</strong>. Quando há uma partição de rede, podem ficar indisponíveis temporariamente para garantir que todos os nós tenham os mesmos dados.</p>
+                <ul class="bank-list">
+                    <li><strong>ArangoDB:</strong> Replicação síncrona, líder-seguidor</li>
+                    <li><strong>MongoDB:</strong> Replica sets com eleição de primário</li>
+                    <li><strong>Neo4j:</strong> ACID completo, Causal Cluster</li>
+                    <li><strong>HBase:</strong> Consistência forte por linha, HDFS com replicação</li>
+                </ul>
+                <p style="margin-top: 15px; color: #0c5460;"><strong>Quando usar:</strong> Sistemas financeiros, transações críticas, dados que não podem ficar inconsistentes.</p>
+            </div>
+
+            <div class="bank-card">
+                <h3 style="color: #667eea; margin-bottom: 20px;">Bancos AP (Disponibilidade + Partição)</h3>
+                <p>Estes bancos <strong>priorizam disponibilidade</strong>. Aceitam que os dados possam ficar temporariamente inconsistentes entre nós, mas garantem que o sistema sempre responde.</p>
+                <ul class="bank-list">
+                    <li><strong>Cassandra:</strong> Replicação assíncrona, consistência eventual</li>
+                    <li><strong>Redis:</strong> Master-slave assíncrono, eventual consistency</li>
+                    <li><strong>DynamoDB:</strong> Replicação multi-zona assíncrona</li>
+                    <li><strong>CouchDB:</strong> Replicação mestre-mestre, sincronização eventual</li>
+                </ul>
+                <p style="margin-top: 15px; color: #856404;"><strong>Quando usar:</strong> Aplicações de alta disponibilidade, cache, IoT, big data, sistemas que podem tolerar inconsistência temporária.</p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO DE COMPARAÇÃO -->
+        <div id="comparacao" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 2em;">📊 Tabela Comparativa Completa</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Banco</th>
+                        <th>Modelo</th>
+                        <th>CAP</th>
+                        <th>Linguagem</th>
+                        <th>Melhor Para</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ArangoDB</strong></td>
+                        <td>Multimodelo</td>
+                        <td>CP</td>
+                        <td>AQL</td>
+                        <td>Dados conectados, consultas híbridas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cassandra</strong></td>
+                        <td>Colunar</td>
+                        <td>AP</td>
+                        <td>CQL</td>
+                        <td>Big Data, alta escrita, IoT</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MongoDB</strong></td>
+                        <td>Documentos</td>
+                        <td>CP</td>
+                        <td>MQL</td>
+                        <td>Apps web/mobile, conteúdo dinâmico</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neo4j</strong></td>
+                        <td>Grafos</td>
+                        <td>CP</td>
+                        <td>Cypher</td>
+                        <td>Redes sociais, recomendações</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Redis</strong></td>
+                        <td>Chave-Valor</td>
+                        <td>AP</td>
+                        <td>Comandos Redis</td>
+                        <td>Cache, sessões, contadores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DynamoDB</strong></td>
+                        <td>Chave-Valor</td>
+                        <td>AP</td>
+                        <td>API AWS</td>
+                        <td>Serverless, e-commerce, jogos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HBase</strong></td>
+                        <td>Colunar</td>
+                        <td>CP</td>
+                        <td>Shell/Java</td>
+                        <td>Big Data, séries temporais</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CouchDB</strong></td>
+                        <td>Documentos</td>
+                        <td>AP</td>
+                        <td>HTTP/REST</td>
+                        <td>Offline-first, mobile, IoT</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 30px; padding: 20px; background: #f5f7ff; border-radius: 8px;">
+                <h3 style="color: #667eea; margin-bottom: 15px;">📌 Resumo Rápido para Memorizar</h3>
+                <p><strong>Bancos CP (Consistência):</strong> ArangoDB, MongoDB, Neo4j, HBase</p>
+                <p><strong>Bancos AP (Disponibilidade):</strong> Cassandra, Redis, DynamoDB, CouchDB</p>
+                <p style="margin-top: 15px;"><strong>Dica:</strong> Se a questão fala sobre "consistência eventual", é AP. Se fala sobre "garantia de leitura após escrita", é CP.</p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO DO SIMULADO -->
+        <div id="simulado" class="content-section">
+            <div class="go-to-quiz">
+                <h3>🎯 Pronto para o Simulado?</h3>
+                <p>Você estudou a arquitetura, entendeu o Teorema CAP e memorizou os casos de uso. Agora é hora de testar seu conhecimento!</p>
+                <a href="/home/ubuntu/simulado.html" target="_blank">Ir para o Simulado Completo (50 questões)</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Esconder todas as seções
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remover classe active de todos os botões
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Mostrar seção selecionada
+            document.getElementById(sectionId).classList.add('active');
+
+            // Adicionar classe active ao botão clicado
+            event.target.classList.add('active');
+
+            // Scroll para o topo
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>

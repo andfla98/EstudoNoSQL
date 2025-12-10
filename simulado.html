@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Completo - Bancos de Dados NoSQL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-prev {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-prev:hover:not(:disabled) {
+            background: #e0e0e0;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .result-container.active {
+            display: block;
+        }
+
+        .result-score {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .result-details {
+            background: #f5f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .result-details p {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1em;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .answer-review {
+            display: none;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: left;
+        }
+
+        .answer-review.active {
+            display: block;
+        }
+
+        .review-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .review-item.incorrect {
+            border-left-color: #f44336;
+        }
+
+        .review-item.correct {
+            border-left-color: #4caf50;
+        }
+
+        .review-question {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .review-answer {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn-prev {
+                order: 2;
+            }
+
+            .btn-next {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Simulado NoSQL Completo</h1>
+            <p>Teste seus conhecimentos sobre Bancos de Dados NoSQL</p>
+        </div>
+
+        <div class="progress-text">
+            <span id="currentQuestion">1</span> de <span id="totalQuestions">50</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent">
+            <!-- Conteúdo será inserido aqui -->
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <h2>Resultado Final</h2>
+            <div class="result-score" id="resultScore">0/50</div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="result-details">
+                <p><strong>Acertos:</strong> <span id="correctCount">0</span></p>
+                <p><strong>Erros:</strong> <span id="incorrectCount">0</span></p>
+                <p><strong>Percentual:</strong> <span id="percentage">0</span>%</p>
+            </div>
+            <div id="answerReview" class="answer-review"></div>
+            <button class="btn-restart" onclick="location.reload()">Fazer Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // ARANGODB
+            {
+                question: "Qual banco de dados é classificado como 'multimodelo' por integrar nativamente os modelos de grafo, documento e chave-valor?",
+                options: ["MongoDB", "Cassandra", "ArangoDB", "Neo4j"],
+                correct: 2,
+                explanation: "ArangoDB é o único banco de dados multimodelo que integra nativamente grafos, documentos e chave-valor em uma única plataforma."
+            },
+            {
+                question: "No ArangoDB, os dados em formato JSON são convertidos para um formato binário otimizado chamado:",
+                options: ["BSON", "Protobuf", "VelocyPack", "RocksDB"],
+                correct: 2,
+                explanation: "VelocyPack é o formato binário otimizado utilizado pelo ArangoDB para armazenar dados de forma mais eficiente."
+            },
+            {
+                question: "Qual é o motor de armazenamento utilizado pelo ArangoDB?",
+                options: ["LevelDB", "RocksDB", "InnoDB", "WiredTiger"],
+                correct: 1,
+                explanation: "ArangoDB utiliza RocksDB como seu motor de armazenamento, baseado em LSM-Tree para otimizar escritas."
+            },
+            {
+                question: "De acordo com o Teorema CAP, qual é a posição padrão do ArangoDB?",
+                options: ["AP", "CA", "CP", "Nenhum dos anteriores"],
+                correct: 2,
+                explanation: "ArangoDB é um sistema CP (Consistência e Tolerância a Partições) por padrão, utilizando replicação síncrona."
+            },
+            {
+                question: "O que é a AQL no contexto do ArangoDB?",
+                options: ["Apache Query Language", "ArangoDB Query Language", "Advanced Query Logic", "Async Query Loader"],
+                correct: 1,
+                explanation: "AQL é a ArangoDB Query Language, uma linguagem de consulta declarativa unificada para todos os modelos de dados."
+            },
+
+            // CASSANDRA
+            {
+                question: "No Apache Cassandra, qual é a principal função da Partition Key?",
+                options: ["Ordenar os dados dentro de um nó.", "Definir em qual nó do cluster o dado será armazenado.", "Criar um índice secundário para consultas rápidas.", "Garantir transações ACID entre diferentes tabelas."],
+                correct: 1,
+                explanation: "A Partition Key define em qual nó do cluster o dado será armazenado através de um algoritmo de hash."
+            },
+            {
+                question: "De acordo com o Teorema CAP, o Apache Cassandra é um sistema que prioriza:",
+                options: ["Consistência e Disponibilidade (CA)", "Consistência e Tolerância a Partições (CP)", "Disponibilidade e Tolerância a Partições (AP)", "Atomicidade e Consistência (AC)"],
+                correct: 2,
+                explanation: "Cassandra é um sistema AP que prioriza Disponibilidade e Tolerância a Partições, aceitando consistência eventual."
+            },
+            {
+                question: "Qual é a arquitetura fundamental do Cassandra?",
+                options: ["Master-Slave", "Masterless (Peer-to-Peer)", "Cliente-Servidor", "Centralizada"],
+                correct: 1,
+                explanation: "Cassandra utiliza uma arquitetura masterless onde todos os nós são iguais, eliminando pontos únicos de falha."
+            },
+            {
+                question: "A modelagem de dados 'orientada à consulta', onde a estrutura da tabela é definida pelas perguntas que serão feitas, é uma filosofia central de qual banco de dados?",
+                options: ["Neo4j", "MongoDB", "Redis", "Apache Cassandra"],
+                correct: 3,
+                explanation: "Cassandra utiliza modelagem orientada à consulta, onde você define a estrutura baseado em como os dados serão consultados."
+            },
+            {
+                question: "O que é a Clustering Key no Cassandra?",
+                options: ["Define o nó de armazenamento", "Ordena os dados dentro de uma partição", "Cria um índice secundário", "Garante replicação"],
+                correct: 1,
+                explanation: "A Clustering Key define a ordem de armazenamento dos dados dentro de uma partição, permitindo buscas por faixa eficientes."
+            },
+
+            // MONGODB
+            {
+                question: "O MongoDB armazena dados em um formato binário semelhante ao JSON, chamado de:",
+                options: ["BSON", "JSONB", "VelocyPack", "DocumentX"],
+                correct: 0,
+                explanation: "BSON (Binary JSON) é o formato binário utilizado pelo MongoDB para armazenar dados de forma mais eficiente."
+            },
+            {
+                question: "Em um replica set do MongoDB, se o nó primário falhar, o que acontece?",
+                options: ["O cluster para de funcionar até a intervenção manual.", "Um nó secundário é eleito automaticamente como o novo primário.", "Todas as operações de escrita são bloqueadas permanentemente.", "Os dados são restaurados a partir do último snapshot."],
+                correct: 1,
+                explanation: "MongoDB realiza uma eleição automática onde um nó secundário é promovido a primário quando o primário falha."
+            },
+            {
+                question: "Qual é o mecanismo de escalabilidade horizontal do MongoDB?",
+                options: ["Replicação", "Sharding", "Clustering", "Particionamento"],
+                correct: 1,
+                explanation: "MongoDB utiliza sharding para distribuir dados entre múltiplos servidores, permitindo escalabilidade horizontal."
+            },
+            {
+                question: "De acordo com o Teorema CAP, qual é a posição atual do MongoDB (versão 4.0+)?",
+                options: ["AP", "CA", "CP", "Configurável"],
+                correct: 3,
+                explanation: "MongoDB versões recentes podem operar como CP com transações ACID, oferecendo flexibilidade conforme requisitos."
+            },
+            {
+                question: "O que é uma coleção no MongoDB?",
+                options: ["Um servidor MongoDB", "Um grupo de documentos BSON sem esquema rígido", "Um índice de dados", "Uma partição de dados"],
+                correct: 1,
+                explanation: "Uma coleção é um agrupamento de documentos BSON que não impõe esquema rígido, permitindo estruturas diferentes."
+            },
+
+            // NEO4J
+            {
+                question: "Qual característica do Neo4j permite travessias de grafos extremamente rápidas, pois cada nó armazena ponteiros diretos para seus relacionamentos?",
+                options: ["Sharding Automático", "Index-Free Adjacency", "Replicação Síncrona", "Consistência Ajustável"],
+                correct: 1,
+                explanation: "Index-Free Adjacency permite que cada nó tenha ponteiros diretos para seus relacionamentos, eliminando a necessidade de buscar em índices."
+            },
+            {
+                question: "A linguagem de consulta declarativa e visual utilizada pelo Neo4j, inspirada em SQL mas voltada para grafos, é chamada de:",
+                options: ["AQL", "CQL", "MQL", "Cypher"],
+                correct: 3,
+                explanation: "Cypher é a linguagem de consulta do Neo4j, projetada especificamente para trabalhar com dados em grafos."
+            },
+            {
+                question: "Para qual dos cenários a seguir o Neo4j seria a escolha MENOS recomendada?",
+                options: ["Análise de redes sociais.", "Sistemas de recomendação de produtos.", "Detecção de fraudes baseada em conexões.", "Armazenamento de dados tabulares simples e não relacionados."],
+                correct: 3,
+                explanation: "Neo4j não é recomendado para dados tabulares simples sem relacionamentos complexos, onde SQL seria mais apropriado."
+            },
+            {
+                question: "O que é um relacionamento (relationship) no Neo4j?",
+                options: ["Uma cópia de um nó", "Uma conexão direcionada entre dois nós", "Um índice de dados", "Uma propriedade de um nó"],
+                correct: 1,
+                explanation: "Um relacionamento é uma conexão direcionada entre dois nós que descreve como eles se relacionam."
+            },
+            {
+                question: "Qual é a principal vantagem do Neo4j em relação aos bancos relacionais para dados conectados?",
+                options: ["Melhor performance em JOINs", "Sem necessidade de índices", "Travessias de grafos 100x mais rápidas", "Suporte a transações ACID"],
+                correct: 2,
+                explanation: "Neo4j oferece travessias de grafos muito mais rápidas que JOINs em bancos relacionais, especialmente em dados profundamente conectados."
+            },
+
+            // REDIS
+            {
+                question: "O Redis é conhecido por sua altíssima performance por operar primariamente em:",
+                options: ["Disco SSD", "Memória RAM", "Cache L3 do processador", "Arquivos AOF"],
+                correct: 1,
+                explanation: "Redis é um banco de dados em memória (in-memory), o que lhe confere latência de microssegundos."
+            },
+            {
+                question: "Qual é o principal caso de uso para o Redis devido à sua latência de microssegundos?",
+                options: ["Análise de Big Data", "Armazenamento de longo prazo", "Caching e gerenciamento de sessões", "Transações financeiras complexas"],
+                correct: 2,
+                explanation: "Redis é ideal para caching, gerenciamento de sessões, filas de mensagens e contadores em tempo real."
+            },
+            {
+                question: "Qual banco de dados utiliza uma arquitetura single-threaded para o processamento de comandos, o que garante a atomicidade de cada operação?",
+                options: ["ArangoDB", "Redis", "Cassandra", "MongoDB"],
+                correct: 1,
+                explanation: "Redis processa comandos de forma single-threaded, garantindo atomicidade e consistência sem necessidade de locks complexos."
+            },
+            {
+                question: "Qual a principal desvantagem de um banco de dados que opera primariamente em memória, como o Redis?",
+                options: ["Alta latência nas operações.", "Custo e limitação da capacidade da memória RAM.", "Dificuldade em escalar horizontalmente.", "Flexibilidade de esquema reduzida."],
+                correct: 1,
+                explanation: "Redis é limitado pela quantidade de RAM disponível, o que pode ser custoso para grandes volumes de dados."
+            },
+            {
+                question: "Quais são os mecanismos de persistência do Redis?",
+                options: ["Apenas snapshots", "RDB e AOF", "Apenas logs", "Não possui persistência"],
+                correct: 1,
+                explanation: "Redis oferece RDB (snapshots periódicos) e AOF (Append Only File) para garantir durabilidade dos dados."
+            },
+
+            // DYNAMODB
+            {
+                question: "Qual dos seguintes bancos de dados é um serviço 'Serverless' totalmente gerenciado pela AWS, onde o usuário paga apenas pelo uso?",
+                options: ["Redis", "Cassandra", "MongoDB Atlas", "Amazon DynamoDB"],
+                correct: 3,
+                explanation: "Amazon DynamoDB é um serviço serverless da AWS que gerencia toda a infraestrutura e cobra apenas pelo uso real."
+            },
+            {
+                question: "No DynamoDB, para realizar consultas eficientes em atributos que não fazem parte da chave primária, qual recurso deve ser utilizado?",
+                options: ["Replica Sets", "Global Secondary Index (GSI)", "Sharding", "Triggers"],
+                correct: 1,
+                explanation: "Global Secondary Index (GSI) permite criar índices alternativos para consultar por atributos diferentes da chave primária."
+            },
+            {
+                question: "Qual banco de dados foi criado internamente pela Amazon para resolver seus próprios problemas de escalabilidade no e-commerce?",
+                options: ["MongoDB", "Redis", "Amazon DynamoDB", "ArangoDB"],
+                correct: 2,
+                explanation: "DynamoDB nasceu do projeto interno Dynamo da Amazon, criado para resolver desafios de escalabilidade no e-commerce."
+            },
+            {
+                question: "O que é a Partition Key no DynamoDB?",
+                options: ["Uma chave secundária", "Define em qual partição física o item será armazenado", "Um índice global", "Uma coluna de ordenação"],
+                correct: 1,
+                explanation: "A Partition Key define em qual partição física o item será armazenado através de um algoritmo de hash."
+            },
+            {
+                question: "O que é a Sort Key no DynamoDB?",
+                options: ["Define o nó de armazenamento", "É obrigatória em todas as tabelas", "Permite ordenar itens dentro de uma partição", "Garante replicação"],
+                correct: 2,
+                explanation: "A Sort Key é opcional e permite ordenar itens dentro de uma partição, facilitando consultas por intervalo."
+            },
+
+            // HBASE
+            {
+                question: "O que é o HBase?",
+                options: ["Um banco relacional", "Um banco NoSQL colunar distribuído", "Um cache em memória", "Um banco de grafos"],
+                correct: 1,
+                explanation: "HBase é um banco de dados NoSQL orientado a colunas wide, distribuído, inspirado no Google BigTable."
+            },
+            {
+                question: "Qual é a principal função da Row Key no HBase?",
+                options: ["Armazenar valores", "Definir o tipo de dado", "Identificar e localizar linhas rapidamente", "Criar índices secundários"],
+                correct: 2,
+                explanation: "A Row Key é crítica no HBase, pois define como os dados são acessados e distribuídos no cluster."
+            },
+            {
+                question: "De acordo com o Teorema CAP, qual é a posição do HBase?",
+                options: ["AP", "CA", "CP", "Nenhum dos anteriores"],
+                correct: 2,
+                explanation: "HBase é um sistema CP que prioriza Consistência e Tolerância a Partições, garantindo leitura após escrita."
+            },
+            {
+                question: "O que é uma Column Family no HBase?",
+                options: ["Uma tabela", "Um agrupamento de colunas relacionadas", "Um índice", "Uma partição"],
+                correct: 1,
+                explanation: "Uma Column Family é um agrupamento lógico de colunas relacionadas no HBase."
+            },
+            {
+                question: "Qual é o processo de escrita no HBase?",
+                options: ["Direto para HDFS", "MemStore → WAL → HFile", "Apenas em memória", "Apenas em disco"],
+                correct: 1,
+                explanation: "Os dados são escritos primeiro em MemStore (memória), depois em WAL (backup), e finalmente em HFile (disco)."
+            },
+
+            // COUCHDB
+            {
+                question: "O que é o Apache CouchDB?",
+                options: ["Um banco relacional", "Um banco NoSQL orientado a documentos JSON", "Um cache em memória", "Um banco de grafos"],
+                correct: 1,
+                explanation: "CouchDB é um banco de dados NoSQL orientado a documentos que armazena dados em formato JSON."
+            },
+            {
+                question: "Qual é a principal característica de replicação do CouchDB?",
+                options: ["Apenas mestre-escravo", "Apenas leitura", "Mestre-mestre (multi-master)", "Sem replicação"],
+                correct: 2,
+                explanation: "CouchDB suporta replicação mestre-mestre, permitindo que múltiplos servidores funcionem de forma independente."
+            },
+            {
+                question: "De acordo com o Teorema CAP, qual é a posição do CouchDB?",
+                options: ["CP", "CA", "AP", "Nenhum dos anteriores"],
+                correct: 2,
+                explanation: "CouchDB é um sistema AP que prioriza Disponibilidade e Tolerância a Partições, com consistência eventual."
+            },
+            {
+                question: "O que é um Design Document no CouchDB?",
+                options: ["Um documento comum", "Um documento especial que contém views e funções MapReduce", "Um índice", "Uma partição"],
+                correct: 1,
+                explanation: "Um Design Document é um documento especial que contém as views (MapReduce) e funções de consulta do CouchDB."
+            },
+            {
+                question: "Qual é o principal caso de uso para o CouchDB?",
+                options: ["Análise de Big Data", "Aplicações offline-first com sincronização", "Transações financeiras", "Dados altamente conectados"],
+                correct: 1,
+                explanation: "CouchDB é ideal para aplicações móveis e offline-first que precisam sincronizar dados com o servidor."
+            },
+
+            // COMPARAÇÕES E CONCEITOS GERAIS
+            {
+                question: "O que o ArangoDB e o DynamoDB têm em comum em seus modelos de dados?",
+                options: ["Ambos são exclusivamente bancos de dados de grafos.", "Ambos suportam o modelo chave-valor.", "Ambos utilizam a linguagem de consulta SQL.", "Ambos exigem um esquema rígido na criação das tabelas."],
+                correct: 1,
+                explanation: "Ambos ArangoDB e DynamoDB suportam o modelo chave-valor como parte de seus modelos de dados multimodelo."
+            },
+            {
+                question: "O conceito de 'consistência eventual' é mais proeminente em qual dos seguintes sistemas?",
+                options: ["Neo4j em modo de servidor único.", "Apache Cassandra.", "Bancos de dados SQL tradicionais.", "ArangoDB com replicação síncrona."],
+                correct: 1,
+                explanation: "Cassandra prioriza disponibilidade e usa consistência eventual como modelo padrão, embora seja ajustável."
+            },
+            {
+                question: "Qual banco de dados é mais adequado para análise de dados em tempo real e Big Data?",
+                options: ["Redis", "MongoDB", "Apache Cassandra", "Neo4j"],
+                correct: 2,
+                explanation: "Cassandra é otimizado para Big Data com alta escalabilidade horizontal e performance de escrita excepcional."
+            },
+            {
+                question: "Qual é a principal diferença entre o modelo de dados do MongoDB e do Neo4j?",
+                options: ["MongoDB é relacional, Neo4j não", "MongoDB armazena documentos, Neo4j armazena grafos", "Neo4j é mais rápido", "Não há diferença"],
+                correct: 1,
+                explanation: "MongoDB é orientado a documentos JSON, enquanto Neo4j é orientado a grafos com nós e relacionamentos."
+            },
+            {
+                question: "Qual banco de dados é mais apropriado para um sistema de recomendação baseado em padrões de compra?",
+                options: ["Redis", "HBase", "Neo4j", "Cassandra"],
+                correct: 2,
+                explanation: "Neo4j é ideal para sistemas de recomendação porque pode explorar relacionamentos complexos entre usuários e produtos."
+            },
+            {
+                question: "Para qual cenário o Redis seria a PIOR escolha?",
+                options: ["Cache de sessões", "Armazenamento de terabytes de dados históricos", "Contadores em tempo real", "Filas de mensagens"],
+                correct: 1,
+                explanation: "Redis é limitado pela RAM, então não é adequado para armazenar terabytes de dados históricos."
+            },
+            {
+                question: "Qual banco de dados oferece a melhor performance para consultas com múltiplos JOINs?",
+                options: ["MongoDB", "Cassandra", "Redis", "Bancos de dados SQL tradicionais"],
+                correct: 3,
+                explanation: "Bancos de dados SQL tradicionais são otimizados para JOINs, enquanto NoSQL geralmente não suporta bem essa operação."
+            },
+            {
+                question: "Qual é a principal vantagem do DynamoDB em relação ao MongoDB?",
+                options: ["Melhor performance", "Totalmente gerenciado (Serverless)", "Suporte a JOINs", "Menor custo"],
+                correct: 1,
+                explanation: "DynamoDB é um serviço serverless totalmente gerenciado pela AWS, eliminando overhead operacional."
+            },
+            {
+                question: "Qual banco de dados é mais adequado para armazenar dados de IoT com alta frequência de escrita?",
+                options: ["Neo4j", "MongoDB", "Apache Cassandra", "Redis"],
+                correct: 2,
+                explanation: "Cassandra é otimizado para alta performance de escrita, ideal para dados de sensores IoT."
+            },
+            {
+                question: "Qual é a principal desvantagem do CouchDB em relação ao MongoDB?",
+                options: ["Menor escalabilidade", "Consultas mais lentas via MapReduce", "Sem suporte a replicação", "Maior custo"],
+                correct: 1,
+                explanation: "CouchDB utiliza MapReduce para consultas, que pode ser mais lento que as consultas diretas do MongoDB."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+
+        function renderQuestion(index) {
+            const container = document.getElementById('quizContent');
+            container.innerHTML = '';
+
+            const q = questions[index];
+
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container active';
+
+            const questionNumber = document.createElement('div');
+            questionNumber.className = 'question-number';
+            questionNumber.textContent = `Questão ${index + 1}`;
+
+            const questionText = document.createElement('div');
+            questionText.className = 'question-text';
+            questionText.textContent = q.question;
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            q.options.forEach((option, optionIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (answers[index] === optionIndex) optionDiv.classList.add('selected');
+
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `question-${index}`;
+                input.value = optionIndex;
+                input.checked = answers[index] === optionIndex;
+
+                input.addEventListener('change', () => {
+                    answers[index] = parseInt(optionIndex);
+                    renderQuestion(index);
+                });
+
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(String.fromCharCode(97 + optionIndex) + ') ' + option));
+
+                optionDiv.appendChild(label);
+                optionsDiv.appendChild(optionDiv);
+            });
+
+            questionDiv.appendChild(questionNumber);
+            questionDiv.appendChild(questionText);
+            questionDiv.appendChild(optionsDiv);
+
+            const buttonsDiv = document.createElement('div');
+            buttonsDiv.className = 'buttons';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'btn-prev';
+            prevBtn.textContent = '← Anterior';
+            prevBtn.disabled = index === 0;
+            prevBtn.onclick = () => {
+                if (index > 0) {
+                    currentQuestion--;
+                    renderQuestion(currentQuestion);
+                    updateProgress();
+                }
+            };
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'btn-next';
+            nextBtn.textContent = index === questions.length - 1 ? 'Finalizar' : 'Próxima →';
+            nextBtn.onclick = () => {
+                if (answers[index] === null) {
+                    alert('Por favor, selecione uma resposta antes de continuar.');
+                    return;
+                }
+                if (index < questions.length - 1) {
+                    currentQuestion++;
+                    renderQuestion(currentQuestion);
+                    updateProgress();
+                } else {
+                    finishQuiz();
+                }
+            };
+
+            buttonsDiv.appendChild(prevBtn);
+            buttonsDiv.appendChild(nextBtn);
+
+            questionDiv.appendChild(buttonsDiv);
+            container.appendChild(questionDiv);
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestion + 1;
+        }
+
+        function finishQuiz() {
+            let correct = 0;
+            answers.forEach((answer, index) => {
+                if (answer === questions[index].correct) {
+                    correct++;
+                }
+            });
+
+            const percentage = Math.round((correct / questions.length) * 100);
+            let message = '';
+
+            if (percentage === 100) {
+                message = '🎉 Perfeito! Você domina completamente o assunto!';
+            } else if (percentage >= 90) {
+                message = '🌟 Excelente! Você está muito bem preparado!';
+            } else if (percentage >= 80) {
+                message = '👍 Ótimo desempenho! Você tem uma boa base!';
+            } else if (percentage >= 70) {
+                message = '📚 Bom trabalho! Continue estudando para melhorar!';
+            } else if (percentage >= 60) {
+                message = '💪 Você está no caminho certo! Revise os conceitos mais fracos!';
+            } else if (percentage >= 50) {
+                message = '📖 Estude mais! Você precisa reforçar vários conceitos!';
+            } else {
+                message = '🎓 Revise todo o material e tente novamente!';
+            }
+
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultContainer').classList.add('active');
+            document.getElementById('resultScore').textContent = `${correct}/${questions.length}`;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('incorrectCount').textContent = questions.length - correct;
+            document.getElementById('percentage').textContent = percentage;
+
+            const reviewDiv = document.getElementById('answerReview');
+            reviewDiv.innerHTML = '<h3>Revisão de Respostas</h3>';
+            reviewDiv.classList.add('active');
+
+            answers.forEach((answer, index) => {
+                const isCorrect = answer === questions[index].correct;
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'review-question';
+                questionDiv.textContent = `${index + 1}. ${questions[index].question}`;
+
+                const userAnswerDiv = document.createElement('div');
+                userAnswerDiv.className = 'review-answer';
+                const userAnswerText = answer !== null ? String.fromCharCode(97 + answer) + ') ' + questions[index].options[answer] : 'Não respondida';
+                userAnswerDiv.innerHTML = `<strong>Sua resposta:</strong> ${userAnswerText}`;
+
+                const correctAnswerDiv = document.createElement('div');
+                correctAnswerDiv.className = 'review-answer';
+                correctAnswerDiv.innerHTML = `<strong>Resposta correta:</strong> ${String.fromCharCode(97 + questions[index].correct) + ') ' + questions[index].options[questions[index].correct]}`;
+
+                const explanationDiv = document.createElement('div');
+                explanationDiv.className = 'review-answer';
+                explanationDiv.innerHTML = `<strong>Explicação:</strong> ${questions[index].explanation}`;
+
+                reviewItem.appendChild(questionDiv);
+                reviewItem.appendChild(userAnswerDiv);
+                reviewItem.appendChild(correctAnswerDiv);
+                reviewItem.appendChild(explanationDiv);
+
+                reviewDiv.appendChild(reviewItem);
+            });
+        }
+
+        document.getElementById('totalQuestions').textContent = questions.length;
+        renderQuestion(0);
+    </script>
+</body>
+</html>
